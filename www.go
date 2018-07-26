@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	http "net/http"
+	"net/http"
 	"log"
 	"strings"
+	"io/ioutil"
+	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -27,12 +29,19 @@ func main() {
 	}
 
 func handler2(w http.ResponseWriter, r *http.Request) {
-	http.Get("http://localhost:8888/test/json")
 	resp, err := http.Get("http://localhost:8888/test/json")
 	if err != nil{
 		fmt.Println(err)
+	} else {
+		defer resp.Body.Close()
+		content, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("%s", err)
+			os.Exit(1)
+		}
+		fmt.Fprint(w, string(content))
 	}
-	defer resp.Body.Close()
+
 
 }
 
