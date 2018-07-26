@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"log"
-	"strings"
 	"io/ioutil"
+
+	"strings"
 	"os"
 )
 
@@ -19,7 +20,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("key:", k)
 		fmt.Println("val:", strings.Join(v, ""))
 	}
-	fmt.Fprintf(w, "\"name\":"+"\"xiaomi\""+"\"age\""+":"+"8")
+	fmt.Fprintf(w, "{\"name\":\"xiaomi\",\"age\":8}")
 }
 
 func main() {
@@ -41,7 +42,5 @@ func handler2(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprint(w, string(content))
 	}
-
-
 }
 
