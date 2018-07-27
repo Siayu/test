@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 
 	"strings"
-	"os"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -25,11 +24,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/test/json", handler)
-	http.HandleFunc("/test/getjson", handler2)
+	http.HandleFunc("/test/getjson", handler3)
+
 	log.Fatal(http.ListenAndServe(":8888", nil))
 	}
 
-func handler2(w http.ResponseWriter, r *http.Request) {
+func handler3(w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Get("http://localhost:8888/test/json")
 	if err != nil{
 		fmt.Println(err)
@@ -37,8 +37,7 @@ func handler2(w http.ResponseWriter, r *http.Request) {
 		defer resp.Body.Close()
 		content, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			fmt.Printf("%s", err)
-			os.Exit(1)
+			log.Fatal("%s", err)
 		}
 		fmt.Fprint(w, string(content))
 	}
