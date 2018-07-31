@@ -1,58 +1,77 @@
 package main
-
 import (
+	"database/sql"
 	"fmt"
-	"encoding/json"
-	"net/http"
-	"log"
-	"io/ioutil"
+	//"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
 
-type User2 struct{
-	Name string
-	Age int
-}
 
-type Userslices struct {
-	Users []User2
-}
+func main() {
 
-func main(){
-	http.HandleFunc("/test/jsonencode", handler4)
-	http.HandleFunc("/test/jsondecode", handler5)
-	log.Fatal(http.ListenAndServe(":8888", nil))
-}
+	db, err := sql.Open("mysql", "root:Xiaomi_123@/test2?charset=utf8")
+	checkErr(err)
 
-func handler4 (w http.ResponseWriter, r *http.Request) {
-	var u Userslices
-	u.Users = append(u.Users, User2{Name: "Fred", Age: 25})
-	u.Users = append(u.Users, User2{Name: "Ann", Age: 40})
-	u.Users = append(u.Users, User2{Name: "Sean", Age: 50})
-	b, err :=json.Marshal(u)
-	if(err!=nil){
-		fmt.Println("json err:",err)
+	//插入数据
+	stmt, err := db.Prepare("INSERT userinfo SET username=?,department=?,created=?")
+	checkErr(err)
+
+	res, err := stmt.Exec("root", "工程", time.Now().Unix())
+	checkErr(err)
+
+	id, err := res.LastInsertId()
+	checkErr(err)
+
+	fmt.Println(id)
+
+
+
+	//更新数据
+	//stmt, err = db.Prepare("update userinfo set username=? where uid=?")
+	//checkErr(err)
+	//
+	//res, err = stmt.Exec("rootupdate", id)
+	//checkErr(err)
+	//
+	//affect, err := res.RowsAffected()
+	//checkErr(err)
+	//
+	//fmt.Println(affect)
+
+	//查询数据
+	rows, err := db.Query("SELECT * FROM userinfo WHERE username ='root' order by department desc limit 10 ")
+	checkErr(err)
+
+	for rows.Next() {
+		var uid int
+		var username string
+		var department string
+		var created string
+		err = rows.Scan(&uid, &username, &department, &created)
+		checkErr(err)
+		fmt.Println(uid, username, department, created)
 	}
-	fmt.Fprintln(w,string(b))
+
+	//删除数据
+	stmt, err = db.Prepare("delete from userinfo where uid=?")
+	checkErr(err)
+
+	res, err = stmt.Exec(id)
+	checkErr(err)
+
+	affect, err := res.RowsAffected()
+	checkErr(err)
+
+	fmt.Println(affect)
+
+	db.Close()
+
 }
 
-
-func handler5 (w http.ResponseWriter, r *http.Request) {
-	var u interface{}
-	resp, err := http.Get("http://localhost:8888/test/jsonencode")
+func checkErr(err error) {
 	if err != nil {
-		fmt.Println(err)
-	} else {
-		defer resp.Body.Close()
-		content, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal("%s", err)
-		}
-		fmt.Println(content)
-		fmt.Fprintln(w, string(content))
-		fmt.Println(string(content))
-		str := content
-		json.Unmarshal([]byte(str), &u)
-		fmt.Println(u)
-		fmt.Fprintln(w, u)
+		panic(err)
 	}
 }
