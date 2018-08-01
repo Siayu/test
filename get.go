@@ -27,12 +27,11 @@ func handler6(w http.ResponseWriter, r *http.Request){
 	if !ok || len(keys[0])<1{
 		a.Code = 1
 		a.Info = "error"
+	}else {
+		a.Code = 0
+		a.Info = "ok"
+		a.Data = keys[0]
 	}
-	key := keys[0]
-	fmt.Fprintln(w,key)
-	a.Code = 0
-	a.Info = "ok"
-	a.Data = keys[0]
 	u , err := json.Marshal(a)
 	if err!=nil{
 		fmt.Println(err)
