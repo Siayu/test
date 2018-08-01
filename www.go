@@ -26,11 +26,11 @@ func main() {
 	http.HandleFunc("/test/json", handler)
 	http.HandleFunc("/test/getjson", handler3)
 
-	log.Fatal(http.ListenAndServe(":8888", nil))
+	log.Fatal(http.ListenAndServe(":0000", nil))
 	}
 
 func handler3(w http.ResponseWriter, r *http.Request) {
-	resp, err := http.Get("http://localhost:8888/test/json")
+	resp, err := http.Get("http://localhost:0000/test/json")
 	if err != nil{
 		fmt.Println(err)
 	} else {
