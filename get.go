@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 	"fmt"
-	"log"
 	"encoding/json"
+	"log"
 )
 
 type JsonResponse struct{
