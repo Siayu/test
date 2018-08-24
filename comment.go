@@ -25,7 +25,7 @@ func main() {
 		return
 	}
 	defer fl.Close()
-	buf := make([]byte,1321312)
+	buf := make([]byte, 1321312 )
 	for {
 		n, _ := fl.Read(buf)
 		if 0 == n {
